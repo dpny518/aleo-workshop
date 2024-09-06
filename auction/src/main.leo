@@ -1,6 +1,5 @@
 // The `program` scope defines the data types, functions, and state associated with the `auction` program.
 program auction.aleo {
-
     // A bid in an auction.
     // - `owner`     : The address of the account that owns the record associated with this bid.
     //                 This is separate from the address of the account that placed the bid.
@@ -12,6 +11,15 @@ program auction.aleo {
         bidder: address,
         amount: u64,
         is_winner: bool,
+    }
+
+    // A prize awarded to the winning bidder in an auction.
+    // - `owner`  : The address of the account that won the auction and now owns this prize.
+    //              This will be the same as the winning bidder's address.
+    // - `amount` : The amount of the prize, which is equal to the winning bid amount.
+    record Prize {
+        owner: address,
+        amount: u64
     }
 
     // Returns a new bid.
@@ -62,6 +70,17 @@ program auction.aleo {
             bidder: bid.bidder,
             amount: bid.amount,
             is_winner: true,
+        };
+    }
+
+    // New function to claim the prize
+    transition claim(bid: Bid) -> Prize {
+        // Ensure that the bid is the winning bid
+        assert(bid.is_winner);
+        // Create and return the Prize record
+        return Prize {
+            owner: bid.bidder,
+            amount: bid.amount,
         };
     }
 }
